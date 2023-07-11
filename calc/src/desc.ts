@@ -9,8 +9,10 @@ import {isGrounded} from './mechanics/util';
 
 export interface RawDesc {
   HPEVs?: string;
+  HPIVs?: string;
   attackBoost?: number;
   attackEVs?: string;
+  attackIVs?: string;
   attackerAbility?: string;
   attackerItem?: string;
   attackerName: string;
@@ -21,6 +23,7 @@ export interface RawDesc {
   defenderTera?: string;
   defenseBoost?: number;
   defenseEVs?: string;
+  defenseIVs?: string;
   hits?: number;
   alliesFainted?: number;
   isBeadsOfRuin?: boolean;
@@ -32,6 +35,10 @@ export interface RawDesc {
   isFlowerGiftDefender?: boolean;
   isFriendGuard?: boolean;
   isHelpingHand?: boolean;
+  isBadgeAtk?: boolean;
+  isBadgeDef?: boolean;
+  isBadgeSpc?: boolean;
+  isBadgeSpe?: boolean;
   isCritical?: boolean;
   isLightScreen?: boolean;
   isBurned?: boolean;
@@ -848,6 +855,7 @@ function buildDescription(description: RawDesc, attacker: Pokemon, defender: Pok
     output += description.attackBoost + ' ';
   }
   output = appendIfSet(output, attackerLevel);
+  output = appendIfSet(output, description.attackIVs)
   output = appendIfSet(output, description.attackEVs);
   output = appendIfSet(output, description.attackerItem);
   output = appendIfSet(output, description.attackerAbility);
@@ -904,10 +912,31 @@ function buildDescription(description: RawDesc, attacker: Pokemon, defender: Pok
     output += description.defenseBoost + ' ';
   }
   output = appendIfSet(output, defenderLevel);
+  output = appendIfSet(output, description.HPIVs);
   output = appendIfSet(output, description.HPEVs);
+  if (description.defenseIVs) {
+    output += '/ ' + description.defenseIVs + ' ';
+  }
   if (description.defenseEVs) {
     output += '/ ' + description.defenseEVs + ' ';
   }
+
+  if (description.isBadgeAtk) {
+    output += 'Badge Boosted Attack ';
+  }
+
+  if (description.isBadgeDef) {
+    output += 'Badge Boosted Defense ';
+  }
+
+  if (description.isBadgeSpc) {
+    output += 'Badge Boosted Special ';
+  }
+
+  if (description.isBadgeSpe) {
+    output += 'Badge Boosted ';
+  }
+
   output = appendIfSet(output, description.defenderItem);
   output = appendIfSet(output, description.defenderAbility);
   if (description.isTabletsOfRuin) {

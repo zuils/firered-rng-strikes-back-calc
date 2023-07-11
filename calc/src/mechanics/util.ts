@@ -99,6 +99,10 @@ export function getFinalSpeed(gen: Generation, pokemon: Pokemon, field: Field, s
   // Pledge swamp would get applied here when implemented
   // speedMods.push(1024);
 
+  if (field.attackerSide.isBadgeSpe) {
+    speed = Math.floor(speed * 1.1);
+  }
+
   if ((pokemon.hasAbility('Unburden') && pokemon.abilityOn) ||
       (pokemon.hasAbility('Chlorophyll') && weather.includes('Sun')) ||
       (pokemon.hasAbility('Sand Rush') && weather === 'Sand') ||
@@ -483,6 +487,14 @@ export function getEVDescriptionText(
     : nature.minus === stat ? '-'
     : '') + ' ' +
      Stats.displayStat(stat));
+}
+
+export function getIVDescriptionText(
+  gen: Generation,
+  pokemon: Pokemon,
+  stat: 'atk' | 'def' | 'spd' | 'spa',
+): string {
+  return (pokemon.ivs[stat] + ' IV');
 }
 
 export function handleFixedDamageMoves(attacker: Pokemon, move: Move) {

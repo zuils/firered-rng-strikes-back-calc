@@ -7,6 +7,7 @@ import {Field} from '../field';
 import {Result} from '../result';
 import {
   getModifiedStat,
+  getIVDescriptionText,
   getEVDescriptionText,
   getFinalSpeed,
   getMoveEffectiveness,
@@ -120,6 +121,7 @@ export function calculateADV(
     return result;
   }
 
+  desc.HPIVs = `${defender.ivs.hp} IV`
   desc.HPEVs = `${defender.evs.hp} HP`;
 
   const fixedDamage = handleFixedDamageMoves(attacker, move);
@@ -171,8 +173,10 @@ export function calculateADV(
 
   const isPhysical = move.category === 'Physical';
   const attackStat = isPhysical ? 'atk' : 'spa';
+  desc.attackIVs = getIVDescriptionText(gen, attacker, attackStat);
   desc.attackEVs = getEVDescriptionText(gen, attacker, attackStat, attacker.nature);
   const defenseStat = isPhysical ? 'def' : 'spd';
+  const defenseIVs = getIVDescriptionText(gen, defender, defenseStat);
   desc.defenseEVs = getEVDescriptionText(gen, defender, defenseStat, defender.nature);
 
   let at = attacker.rawStats[attackStat];
@@ -181,6 +185,32 @@ export function calculateADV(
   if (isPhysical && attacker.hasAbility('Huge Power', 'Pure Power')) {
     at *= 2;
     desc.attackerAbility = attacker.ability;
+  }
+
+  if (field.attackerSide.isBadgeAtk) {
+    if (move.hasType('Normal', 'Fighting', 'Ghost', 'Poison', 'Flying', 'Ground', 'Steel', 'Rock', 'Bug')) {
+      at = Math.floor(at * 1.1);
+      desc.isBadgeAtk = true;
+    }
+  }
+
+  if (field.defenderSide.isBadgeDef) {
+    if (isPhysical) {
+      df = Math.floor(df * 1.1);
+    }
+  }
+
+  if (field.attackerSide.isBadgeSpc) {
+    if (move.hasType('Water', 'Fire', 'Grass', 'Electric', 'Dark', 'Psychic', 'Ice', 'Dragon')) {
+      at = Math.floor(at * 1.1);
+      desc.isBadgeSpc = true;
+    }
+  }
+
+  if (field.defenderSide.isBadgeSpc) {
+    if (!isPhysical) {
+      df = Math.floor(df * 1.1);
+    }
   }
 
   if (!attacker.hasItem('Sea Incense') && move.hasType(getItemBoostType(attacker.item))) {
